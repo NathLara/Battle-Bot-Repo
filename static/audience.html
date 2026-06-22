@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BattleBots Arena Screen</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      background: #040508;
+      background-image: 
+        radial-gradient(at 50% 0%, rgba(0, 242, 254, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(255, 7, 58, 0.05) 0px, transparent 50%);
+    }
+    .audience-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 40px;
+      height: 100%;
+    }
+    
+    /* Massive synchronized timer */
+    .timer-sec {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 20px 0;
+    }
+    
+    .giant-timer {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16rem;
+      font-weight: 800;
+      letter-spacing: -6px;
+      line-height: 0.9;
+      color: var(--text-main);
+      text-shadow: 0 0 40px rgba(255, 255, 255, 0.05);
+      transition: color 0.3s ease, text-shadow 0.3s ease;
+      user-select: none;
+    }
+    
+    .giant-timer.running {
+      color: var(--accent-green);
+      text-shadow: var(--shadow-glow-green);
+    }
+    
+    .giant-timer.warning {
+      color: var(--accent-red);
+      text-shadow: var(--shadow-glow-red);
+    }
+    
+    .giant-timer.paused {
+      color: var(--accent-yellow);
+      text-shadow: var(--shadow-glow-yellow);
+    }
+    
+    .giant-timer.finished {
+      color: var(--accent-red);
+      text-shadow: var(--shadow-glow-red);
+    }
+
+    /* Sound indicator/overlay */
+    .audio-overlay {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--glass-border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+    }
+    
+    .audio-overlay:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  
+
+
+  <div class="audience-container">
+    
+    <!-- Top Match Header -->
+    <header style="text-align: center;">
+      <div id="match-header-title" class="audience-match-title">Qualification Arena</div>
+    </header>
+
+    <!-- Center Giant Timer -->
+    <div class="timer-sec">
+      <div id="giant-timer-display" class="giant-timer">03:00</div>
+    </div>
+
+    <!-- Bottom Teams Row -->
+    <div class="audience-teams-row">
+      <!-- Red Team -->
+      <div class="audience-team-panel red">
+        <span class="corner-label">Red Corner</span>
+        <div id="teamA-name" class="name">--</div>
+        <div id="teamA-bot" class="robot">--</div>
+        <span id="teamA-rank" class="rank">Rank --</span>
+      </div>
+
+      <!-- VS Sign -->
+      <div class="audience-vs">VS</div>
+
+      <!-- Blue Team -->
+      <div class="audience-team-panel blue">
+        <span class="corner-label">Blue Corner</span>
+        <div id="teamB-name" class="name">--</div>
+        <div id="teamB-bot" class="robot">--</div>
+        <span id="teamB-rank" class="rank">Rank --</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="audience.js"></script>
+</body>
+</html>

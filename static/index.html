@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BattleBots Arena Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- App Header with Tab Navigation -->
+  <header class="app-header">
+    <div class="logo-section">
+      <span class="logo-text">BattleBots Arena Manager</span>
+    </div>
+    <nav class="tab-navigation">
+      <button id="nav-teams" class="tab-btn" onclick="switchTab('teams')">Teams</button>
+      <button id="nav-match-control" class="tab-btn active" onclick="switchTab('match-control')">Match Control</button>
+      <button id="nav-match-creation" class="tab-btn" onclick="switchTab('match-creation')">Match Creation</button>
+      <button id="nav-display" class="tab-btn" onclick="switchTab('display')">Display</button>
+    </nav>
+  </header>
+
+  <!-- TAB 1: TEAMS -->
+  <div id="tab-teams" class="tab-content">
+    <div class="grid-two-col">
+      <!-- Add Team Form -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Add New Team</h2>
+        </div>
+        <form id="add-team-form" onsubmit="event.preventDefault(); addTeam();">
+          <div class="form-group">
+            <label for="team-name">Team Name</label>
+            <input type="text" id="team-name" placeholder="e.g. Bite Force" required>
+          </div>
+          <div class="form-group">
+            <label for="bot-name">Robot Name</label>
+            <input type="text" id="bot-name" placeholder="e.g. Bite Force v3" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Add Team</button>
+        </form>
+      </section>
+
+      <!-- Registered Teams List -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Registered Teams</h2>
+          <span id="teams-count" class="badge-rank">0</span>
+        </div>
+        <div id="teams-list">
+          <!-- Dynamically filled -->
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- TAB 2: MATCH CONTROL -->
+  <div id="tab-match-control" class="tab-content active">
+    <div class="grid-three-col">
+      <!-- Left Column: Timer & Controls -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Arena Live Controls</h2>
+          <span id="timer-status-badge" class="badge-rank">IDLE</span>
+        </div>
+        <div class="timer-display-container">
+          <div id="timer-display" class="timer-numbers">03:00</div>
+        </div>
+        <div class="timer-controls">
+          <button onclick="controlTimer('start')" class="btn btn-success">Start</button>
+          <button onclick="controlTimer('pause')" class="btn btn-secondary">Pause</button>
+          <button onclick="controlTimer('reset')" class="btn btn-danger">Reset</button>
+        </div>
+        <div class="match-nav-controls" style="margin-top: 8px; display: flex; gap: 8px; justify-content: center; margin-bottom: 24px;">
+          <button onclick="loadPrevMatch()" class="btn btn-secondary">← Prev</button>
+          <button onclick="loadNextMatch()" class="btn btn-secondary">Next →</button>
+        </div>
+        <div class="current-match-display">
+          <div class="teams-vs-row">
+            <div class="side-card red-corner">
+              <span class="corner-label">Red Corner</span>
+              <span id="active-teamA-name" class="team-title">--</span>
+              <span id="active-teamA-bot" class="bot-title">--</span>
+              <span id="active-teamA-rank" class="rank-badge">Rank --</span>
+            </div>
+            <div class="side-card blue-corner">
+              <span class="corner-label">Blue Corner</span>
+              <span id="active-teamB-name" class="team-title">--</span>
+              <span id="active-teamB-bot" class="bot-title">--</span>
+              <span id="active-teamB-rank" class="rank-badge">Rank --</span>
+            </div>
+          </div>
+          <div class="winner-selector-row">
+            <button id="btn-win-A" onclick="setWinner('A')" class="btn" style="display: none;">Win Red</button>
+            <button id="btn-win-B" onclick="setWinner('B')" class="btn" style="display: none;">Win Blue</button>
+          </div>
+        </div>
+        <div id="match-scoring-actions" style="margin-top: 12px; text-align: center; display: none;">
+          <button onclick="clearWinner()" class="btn btn-secondary" style="font-size: 0.8rem; width: 100%;">Clear Winner / Unplay Match</button>
+        </div>
+      </section>
+
+      <!-- Center Column: Matches List -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>All Matches</h2>
+        </div>
+        <div id="matches-list" class="matches-list">
+          <!-- Dynamically filled -->
+        </div>
+      </section>
+
+      <!-- Right Column: Rankings -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Current Standings</h2>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">LOCK RANKINGS</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="lock-rankings-toggle" onchange="toggleRankingsLock(this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Team / Robot</th>
+                <th style="text-align: center;">W-L</th>
+                <th style="text-align: center;">Win%</th>
+                <th style="text-align: center;">SOS%</th>
+              </tr>
+            </thead>
+            <tbody id="rankings-table-body">
+              <!-- Dynamically filled -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- TAB 3: MATCH CREATION -->
+  <div id="tab-match-creation" class="tab-content">
+    <div class="grid-two-col">
+      <!-- Left Column: Scheduler & Manual Creators -->
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        
+        <!-- Panel A: Auto-Generate Qualification Schedule -->
+        <section class="glass-panel" style="margin-bottom: 0;">
+          <div class="panel-header">
+            <h2>Auto-Generate Qual Schedule</h2>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="quali-min-matches">Min Matches / Team</label>
+              <input type="number" id="quali-min-matches" value="3" min="1">
+            </div>
+            <div class="form-group">
+              <label for="match-duration-select">Duration (Sec)</label>
+              <select id="match-duration-select">
+                <option value="120">2 Min (120s)</option>
+                <option value="180" selected>3 Min (180s)</option>
+                <option value="300">5 Min (300s)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="quali-start-time">Block Start Time</label>
+              <input type="time" id="quali-start-time" value="10:00">
+            </div>
+            <div class="form-group">
+              <label for="quali-end-time">Block End Time</label>
+              <input type="time" id="quali-end-time" value="14:00">
+            </div>
+          </div>
+          <button onclick="generateQualiMatches()" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Auto-Generate Schedule</button>
+        </section>
+
+        <!-- Panel B: Manually Add Match -->
+        <section class="glass-panel" style="margin-bottom: 0;">
+          <div class="panel-header">
+            <h2>Manually Add Match</h2>
+          </div>
+          <div class="form-group">
+            <label for="manual-match-type">Match Type</label>
+            <select id="manual-match-type" onchange="toggleManualMatchType()">
+              <option value="quali" selected>Qualification Match</option>
+              <option value="playoff">Playoff / Finals Match</option>
+            </select>
+          </div>
+          
+          <!-- Qualification-specific fields -->
+          <div id="manual-qual-fields">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="manual-team-A">Red Corner</label>
+                <select id="manual-team-A">
+                  <!-- Dynamically filled -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="manual-team-B">Blue Corner</label>
+                <select id="manual-team-B">
+                  <!-- Dynamically filled -->
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Playoff-specific fields -->
+          <div id="manual-playoff-fields" style="display: none;">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="playoff-slotA-type">Slot A Source</label>
+                <select id="playoff-slotA-type" onchange="updatePlayoffSourceDropdowns()">
+                  <option value="rank">Standings Rank</option>
+                  <option value="match_winner">Winner of Playoff</option>
+                </select>
+                <select id="playoff-slotA-value" style="margin-top: 8px;">
+                  <!-- Dynamically filled -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="playoff-slotB-type">Slot B Source</label>
+                <select id="playoff-slotB-type" onchange="updatePlayoffSourceDropdowns()">
+                  <option value="rank">Standings Rank</option>
+                  <option value="match_winner">Winner of Playoff</option>
+                </select>
+                <select id="playoff-slotB-value" style="margin-top: 8px;">
+                  <!-- Dynamically filled -->
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 12px;">
+            <label for="manual-match-duration">Duration (Sec)</label>
+            <select id="manual-match-duration">
+              <option value="120">2 Min (120s)</option>
+              <option value="180" selected>3 Min (180s)</option>
+              <option value="300">5 Min (300s)</option>
+            </select>
+          </div>
+
+          <button onclick="submitManualMatchForm()" class="btn btn-success" style="width: 100%; margin-top: 12px;">Create Match</button>
+        </section>
+      </div>
+
+      <!-- Right Column: Scheduled Matches List -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Scheduled Matches</h2>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px;">Drag and drop matches to reorder them. Qualification matches cannot be deleted when standings are locked.</p>
+        <div id="matches-creation-list" class="matches-list" style="max-height: 600px;">
+          <!-- Dynamically filled with matches, reorder arrows, and delete buttons -->
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- TAB 5: DISPLAY & SETUP -->
+  <div id="tab-display" class="tab-content">
+    <div class="display-grid">
+      <!-- Live Screen Shortcuts -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Display Screens</h2>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Open these links in separate tabs or screens for the audience projection or pit displays.</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <a href="/pit" target="_blank" class="btn btn-secondary" style="width: 100%;">Open Pit Display</a>
+          <a href="/audience" target="_blank" class="btn btn-secondary" style="width: 100%;">Open Audience Display</a>
+        </div>
+      </section>
+
+      <!-- LAN Settings -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>LAN Network Settings</h2>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Use this URL on other devices connected to the same local area network (LAN) to access screens.</p>
+        <div style="background-color: #0f172a; border: 1px solid var(--glass-border); padding: 16px; border-radius: 6px; text-align: center;">
+          <code id="network-ip-link" style="color: var(--accent-blue); font-weight: 700; font-size: 1rem;">http://127.0.0.1:8000</code>
+        </div>
+      </section>
+
+      <!-- Admin Actions -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Administrative Settings</h2>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Warning: Resetting will clear all teams, schedule data, standings, and active timer records.</p>
+        <button onclick="resetTournament()" class="btn btn-danger" style="width: 100%;">Reset Tournament Data</button>
+      </section>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

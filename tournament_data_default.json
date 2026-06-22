@@ -1,0 +1,19 @@
+{
+  "settings": {
+    "matchDuration": 180,
+    "lockRankings": false,
+    "activeMatchId": null
+  },
+  "teams": [],
+  "matches": [],
+  "playoffBracket": {
+    "matches": []
+  },
+  "timer": {
+    "state": "idle",
+    "duration": 180,
+    "remaining": 180,
+    "lastStartedAt": null,
+    "countdownValue": 0
+  }
+}
