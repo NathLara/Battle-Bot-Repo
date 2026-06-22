@@ -1,6 +1,6 @@
 # BattleBots Tournament Manager
 
-A tournament management suite for combat robotics / BattleBots events. It includes a desktop console launcher alongside web-based displays for administration, the pit area, and the audience.
+A tournament management suite for trailblazer's battlebot events. It includes a desktop console launcher alongside web-based displays for administration, the pit area, and the audience. **Mostly vibecoded, beware**
 
 ## Key Features
 
